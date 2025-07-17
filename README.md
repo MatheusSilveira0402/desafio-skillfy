@@ -1,26 +1,23 @@
 # Desafio Técnico - App de Gerenciamento de Tarefas 📱✅
 
-Este desafio foi criado para avaliar suas habilidades em desenvolvimento frontend/mobile, consumo de APIs e criação de interfaces modernas.
+Este desafio foi criado para avaliar suas habilidades em desenvolvimento mobile com Flutter, consumo de APIs e criação de interfaces modernas.
 
 ## 🎯 Objetivo
 
-Desenvolver uma aplicação web ou mobile que permita aos usuários gerenciar suas tarefas diárias, com integração a uma API de produtividade que sugere o melhor horário para realizar cada tarefa.
+Desenvolver uma aplicação mobile usando Flutter que permita aos usuários gerenciar suas tarefas diárias, com integração a uma API de produtividade que sugere o melhor horário para realizar cada tarefa.
 
 ## 📋 Pré-requisitos
 
 - Conhecimento em:
-  - React/React Native ou Flutter
-  - TypeScript/JavaScript
+  - Flutter & Dart
   - Consumo de APIs REST
-  - Gerenciamento de estado
+  - Gerenciamento de estado (Provider, Riverpod ou Bloc)
   - UI/UX
   - Git
 
 ## 🧩 O que você deve fazer
 
-1. Criar uma aplicação web ou mobile (escolha uma das opções):
-   - Web: React + TypeScript
-   - Mobile: React Native + TypeScript ou Flutter
+1. Criar uma aplicação mobile usando Flutter
 
 2. Implementar as seguintes funcionalidades:
    - Dashboard com visão geral das tarefas
@@ -52,8 +49,8 @@ Desenvolver uma aplicação web ou mobile que permita aos usuários gerenciar su
      ```
 
 4. Implementar uma interface moderna e responsiva:
-   - Design system consistente
-   - Animações suaves
+   - Material Design 3 (Material You)
+   - Animações suaves usando Flutter animations
    - Feedback visual para ações do usuário
    - Tratamento de estados de loading e erro
 
@@ -61,27 +58,41 @@ Desenvolver uma aplicação web ou mobile que permita aos usuários gerenciar su
 
 ```
 .
-├── src/
-│   ├── components/
-│   │   ├── TaskCard/
-│   │   ├── PriorityBadge/
-│   │   ├── CategoryFilter/
-│   │   └── TimeSuggestions/
+├── lib/
+│   ├── main.dart
+│   ├── app.dart
+│   ├── models/
+│   │   ├── task.dart
+│   │   ├── task_suggestion.dart
+│   │   └── user_preferences.dart
 │   ├── screens/
-│   │   ├── Dashboard/
-│   │   ├── TaskList/
-│   │   └── TaskForm/
+│   │   ├── dashboard/
+│   │   │   └── dashboard_screen.dart
+│   │   ├── task_list/
+│   │   │   └── task_list_screen.dart
+│   │   └── task_form/
+│   │       └── task_form_screen.dart
+│   ├── widgets/
+│   │   ├── task_card.dart
+│   │   ├── priority_badge.dart
+│   │   ├── category_filter.dart
+│   │   └── time_suggestions.dart
 │   ├── services/
-│   │   └── api.ts
-│   ├── hooks/
-│   │   └── useTasks.ts
-│   ├── contexts/
-│   │   └── TaskContext.tsx
-│   └── styles/
-│       └── theme.ts
-├── public/
-├── tests/
-├── package.json
+│   │   ├── api_service.dart
+│   │   └── task_service.dart
+│   ├── providers/
+│   │   ├── task_provider.dart
+│   │   └── theme_provider.dart
+│   ├── utils/
+│   │   ├── constants.dart
+│   │   └── helpers.dart
+│   └── theme/
+│       ├── app_theme.dart
+│       └── app_colors.dart
+├── android/
+├── ios/
+├── test/
+├── pubspec.yaml
 └── README.md
 ```
 
@@ -194,44 +205,73 @@ json-server --watch db.json --port 3001
 - `POST /suggest-time` - Simula a sugestão de horário
 
 5. Exemplo de uso da API de sugestão de horário:
-```typescript
-// services/api.ts
-const API_URL = 'http://localhost:3001';
+```dart
+// services/api_service.dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-export const suggestTime = async (taskData: TaskData) => {
-  const response = await fetch(`${API_URL}/suggest-time`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(taskData),
-  });
-  
-  return response.json();
-};
+class ApiService {
+  static const String _baseUrl = 'http://localhost:3001';
+
+  static Future<Map<String, dynamic>> suggestTime(Map<String, dynamic> taskData) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/suggest-time'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(taskData),
+    );
+    
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to get time suggestions');
+    }
+  }
+}
 ```
 
 6. Para simular diferentes cenários, você pode modificar o `db.json` com diferentes dados de teste.
 
 ### Versões Recomendadas
-- React 18+ ou React Native 0.70+
-- TypeScript 4.5+
-- Styled Components ou Tailwind CSS
-- React Query ou SWR para gerenciamento de estado
-- Jest e React Testing Library para testes
+- Flutter 3.27+
+- Dart 3.8+
+- Material Design 3
+- Provider, Riverpod ou Bloc para gerenciamento de estado
+- http ou dio para requisições HTTP
+- shared_preferences para persistência local
+- flutter_test para testes unitários
+
+### Dependências Sugeridas
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.1.0
+  provider: ^6.1.1  # ou riverpod/bloc
+  shared_preferences: ^2.2.2
+  intl: ^0.18.1
+  flutter_svg: ^2.0.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  mockito: ^5.4.4
+```
 
 ### Performance
-- Lazy loading de componentes
-- Code splitting
-- Otimização de bundle
-- Cache de requisições
-- Offline support
+- Lazy loading de widgets
+- Uso eficiente de setState
+- Implementação de paginação para listas grandes
+- Cache de requisições HTTP
+- Otimização de imagens e assets
 
 ### Acessibilidade
+- Uso adequado de Semantics widgets
 - Suporte a leitores de tela
-- Navegação por teclado
-- Contraste adequado
-- Textos alternativos
+- Contraste adequado de cores
+- Tamanhos de toque apropriados
 - Suporte a modo escuro
 
 ## 🚀 Como entregar
@@ -240,41 +280,51 @@ export const suggestTime = async (taskData: TaskData) => {
 2. Realize o desafio no seu fork
 3. Ao finalizar, envie um **Pull Request** para este repositório com a sua solução
 
-### 📱 Entrega do APK (Desenvolvedores Mobile)
+### 📱 Entrega do APK
 
-Se você escolheu desenvolver a versão mobile (React Native ou Flutter), além do código fonte, você deve:
+Além do código fonte, você deve gerar um APK de release:
 
 1. Gerar um APK de release:
-   - Para React Native:
-     ```bash
-     cd android
-     ./gradlew assembleRelease
-     ```
-   - Para Flutter:
-     ```bash
-     flutter build apk --release
-     ```
+   ```bash
+   flutter build apk --release
+   ```
 
-2. O APK gerado estará localizado em:
-   - React Native: `android/app/build/outputs/apk/release/app-release.apk`
-   - Flutter: `build/app/outputs/flutter-apk/app-release.apk`
+2. O APK gerado estará localizado em: `build/app/outputs/flutter-apk/app-release.apk`
 
 3. Adicione o APK ao repositório em uma pasta chamada `release/`
 
 4. Inclua no README:
    - Link para download do APK
-   - Versão mínima do Android suportada
+   - Versão mínima do Android suportada (recomendado: API 21+)
    - Permissões necessárias
    - Instruções de instalação
+   - Screenshots da aplicação
+
+### Exemplo de seção no README para o APK:
+```markdown
+## 📱 Download do APK
+
+- **APK Release**: [Download aqui](./release/app-release.apk)
+- **Versão mínima do Android**: API 21 (Android 5.0)
+- **Tamanho**: ~XX MB
+- **Permissões**: Internet
+
+### Como instalar:
+1. Baixe o arquivo APK
+2. Ative "Fontes desconhecidas" nas configurações do Android
+3. Toque no arquivo APK e siga as instruções de instalação
+```
 
 ## ✅ Critérios de Avaliação
 
-- Qualidade do código e organização
-- Fidelidade ao design proposto
-- Experiência do usuário
-- Tratamento de erros e estados
+- Qualidade do código Dart e organização
+- Uso adequado dos widgets Flutter
+- Fidelidade ao Material Design 3
+- Experiência do usuário mobile
+- Tratamento de erros e estados de loading
 - Performance e otimizações
 - Testes implementados
+- Gerenciamento de estado eficiente
 - Documentação do projeto
 - Implementação de funcionalidades extras (diferencial)
 
@@ -284,14 +334,13 @@ Boa sorte e divirta-se desenvolvendo! 🚀
 
 ## 📚 Referências
 
-- [React Documentation](https://reactjs.org/docs/getting-started.html)
-- [React Native Documentation](https://reactnative.dev/docs/getting-started)
 - [Flutter Documentation](https://flutter.dev/docs)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-- [Styled Components Documentation](https://styled-components.com/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [React Query Documentation](https://tanstack.com/query/latest)
-- [Jest Documentation](https://jestjs.io/docs/getting-started)
-- [React Testing Library Documentation](https://testing-library.com/docs/react-testing-library/intro/)
+- [Dart Documentation](https://dart.dev/guides)
+- [Material Design 3](https://m3.material.io/)
+- [Provider Documentation](https://pub.dev/packages/provider)
+- [Riverpod Documentation](https://riverpod.dev/)
+- [Bloc Documentation](https://bloclibrary.dev/)
+- [HTTP Package Documentation](https://pub.dev/packages/http)
+- [Flutter Testing Documentation](https://flutter.dev/docs/testing)
 - [Material Design Guidelines](https://material.io/design)
-- [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/) 
+- [Flutter Performance Best Practices](https://flutter.dev/docs/perf/best-practices) 
